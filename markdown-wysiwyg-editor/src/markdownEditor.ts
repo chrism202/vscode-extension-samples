@@ -248,6 +248,10 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomEditorProvide
 	private getHtmlForWebview(webview: vscode.Webview): string {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
 			this._context.extensionUri, 'media', 'editor.js'));
+		const markedUri = webview.asWebviewUri(vscode.Uri.joinPath(
+			this._context.extensionUri, 'media', 'lib', 'marked.min.js'));
+		const turndownUri = webview.asWebviewUri(vscode.Uri.joinPath(
+			this._context.extensionUri, 'media', 'lib', 'turndown.js'));
 
 		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(
 			this._context.extensionUri, 'media', 'reset.css'));
@@ -265,7 +269,7 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomEditorProvide
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource};">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet" />
 				<link href="${styleVSCodeUri}" rel="stylesheet" />
@@ -292,6 +296,8 @@ export class MarkdownWysiwygEditorProvider implements vscode.CustomEditorProvide
 					<button data-command="quote" title="Quote" class="toolbar-button">"</button>
 				</div>
 				<div id="editor" class="editor" contenteditable="true"></div>
+				<script nonce="${nonce}" src="${markedUri}"></script>
+				<script nonce="${nonce}" src="${turndownUri}"></script>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;

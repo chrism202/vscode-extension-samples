@@ -3,180 +3,52 @@
 
 	let currentContent = '';
 	let isEditable = true;
+	let isInitialized = false;
+	const pendingGetFileData = [];
+	let savedSelection = null;
 
 	// Get references to DOM elements
 	const editor = document.getElementById('editor');
 	const toolbar = document.getElementById('toolbar');
 
-	// Simple markdown to HTML converter
+	if (window.marked) {
+		window.marked.setOptions({
+			breaks: true,
+			gfm: true
+		});
+	}
+
+	const turndownService = window.TurndownService ? new window.TurndownService({
+		headingStyle: 'atx',
+		hr: '---',
+		bulletListMarker: '-',
+		codeBlockStyle: 'fenced'
+	}) : null;
+
 	function markdownToHtml(markdown) {
-		let html = markdown;
-
-		// Escape HTML first to prevent XSS
-		html = html.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
-
-		// Headers
-		html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-		html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-		html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-		// Bold
-		html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
-		html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
-
-		// Italic
-		html = html.replace(/\*([^\*]+)\*/g, '<em>$1</em>');
-		html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
-
-		// Code
-		html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-		// Links
-		html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>');
-
-		// Blockquotes
-		html = html.replace(/^&gt; (.*$)/gim, '<blockquote>$1</blockquote>');
-
-		// Lists
-		const lines = html.split('\n');
-		let inList = false;
-		let listType = null;
-		const processed = [];
-
-		for (let i = 0; i < lines.length; i++) {
-			let line = lines[i];
-
-			// Unordered list
-			if (line.match(/^\s*[\*\-\+] /)) {
-				if (!inList || listType !== 'ul') {
-					if (inList) {
-						processed.push(`</${listType}>`);
-					}
-					processed.push('<ul>');
-					inList = true;
-					listType = 'ul';
-				}
-				line = line.replace(/^\s*[\*\-\+] /, '<li>') + '</li>';
-			}
-			// Ordered list
-			else if (line.match(/^\s*\d+\. /)) {
-				if (!inList || listType !== 'ol') {
-					if (inList) {
-						processed.push(`</${listType}>`);
-					}
-					processed.push('<ol>');
-					inList = true;
-					listType = 'ol';
-				}
-				line = line.replace(/^\s*\d+\. /, '<li>') + '</li>';
-			}
-			// Not a list item
-			else {
-				if (inList) {
-					processed.push(`</${listType}>`);
-					inList = false;
-					listType = null;
-				}
-			}
-
-			processed.push(line);
+		if (!window.marked) {
+			return markdown;
 		}
-
-		if (inList) {
-			processed.push(`</${listType}>`);
-		}
-
-		html = processed.join('\n');
-
-		// Paragraphs (lines separated by blank lines)
-		html = html.split('\n\n').map(para => {
-			para = para.trim();
-			if (!para) {
-				return '';
-			}
-			// Don't wrap if already wrapped in a tag
-			if (para.match(/^<(h[1-6]|ul|ol|blockquote|pre)/)) {
-				return para;
-			}
-			return '<p>' + para + '</p>';
-		}).join('\n');
-
-		// Line breaks
-		html = html.replace(/\n/g, '<br>');
-
-		return html;
+		return window.marked.parse(markdown ?? '');
 	}
 
-	// Simple HTML to markdown converter
-	function htmlToMarkdown(html) {
-		let markdown = html;
-
-		// Remove div wrappers and other container elements
-		markdown = markdown.replace(/<div[^>]*>/gi, '');
-		markdown = markdown.replace(/<\/div>/gi, '\n');
-
-		// Headers
-		markdown = markdown.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n');
-		markdown = markdown.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n');
-		markdown = markdown.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n');
-		markdown = markdown.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n');
-		markdown = markdown.replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n');
-		markdown = markdown.replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n');
-
-		// Bold
-		markdown = markdown.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
-		markdown = markdown.replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**');
-
-		// Italic
-		markdown = markdown.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*');
-		markdown = markdown.replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*');
-
-		// Code
-		markdown = markdown.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`');
-
-		// Links
-		markdown = markdown.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)');
-
-		// Blockquotes
-		markdown = markdown.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n');
-
-		// Lists
-		markdown = markdown.replace(/<ul[^>]*>/gi, '\n');
-		markdown = markdown.replace(/<\/ul>/gi, '\n');
-		markdown = markdown.replace(/<ol[^>]*>/gi, '\n');
-		markdown = markdown.replace(/<\/ol>/gi, '\n');
-		markdown = markdown.replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n');
-
-		// Paragraphs
-		markdown = markdown.replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n');
-
-		// Line breaks
-		markdown = markdown.replace(/<br\s*\/?>/gi, '\n');
-
-		// Clean up HTML entities
-		markdown = markdown.replace(/&lt;/g, '<');
-		markdown = markdown.replace(/&gt;/g, '>');
-		markdown = markdown.replace(/&amp;/g, '&');
-		markdown = markdown.replace(/&quot;/g, '"');
-
-		// Clean up extra whitespace
-		markdown = markdown.replace(/\n{3,}/g, '\n\n');
-		markdown = markdown.trim();
-
-		return markdown;
-	}
+		function htmlToMarkdown(html) {
+			if (!turndownService) {
+				return html ?? '';
+			}
+			return turndownService.turndown(html ?? '').trim();
+		}
 
 	// Update editor content
 	function updateEditor(markdown) {
 		currentContent = markdown;
 		const html = markdownToHtml(markdown);
 		editor.innerHTML = html;
+		savedSelection = null;
 	}
 
 	// Handle editor changes
-	function onEditorChange() {
+	function syncContentWithDom() {
 		const markdown = htmlToMarkdown(editor.innerHTML);
 		if (markdown !== currentContent) {
 			currentContent = markdown;
@@ -185,6 +57,10 @@
 				content: markdown
 			});
 		}
+	}
+
+	function onEditorChange() {
+		syncContentWithDom();
 	}
 
 	// Debounce function to avoid too many updates
@@ -203,9 +79,37 @@
 	const debouncedOnEditorChange = debounce(onEditorChange, 300);
 
 	// Handle toolbar commands
-	function execCommand(command) {
+	function saveSelection() {
 		const selection = window.getSelection();
-		const range = selection.getRangeCount() > 0 ? selection.getRangeAt(0) : null;
+		if (!selection || selection.rangeCount === 0) {
+			savedSelection = null;
+			return;
+		}
+		const range = selection.getRangeAt(0);
+		if (!editor.contains(range.commonAncestorContainer)) {
+			savedSelection = null;
+			return;
+		}
+		savedSelection = range.cloneRange();
+	}
+
+	function restoreSelection() {
+		if (!savedSelection) {
+			return window.getSelection();
+		}
+		const selection = window.getSelection();
+		if (!selection) {
+			return null;
+		}
+		selection.removeAllRanges();
+		selection.addRange(savedSelection);
+		return selection;
+	}
+
+	function execCommand(command) {
+		editor.focus();
+		const selection = restoreSelection() ?? window.getSelection();
+		const range = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
 		switch (command) {
 			case 'bold':
@@ -249,6 +153,7 @@
 		}
 
 		editor.focus();
+		saveSelection();
 		onEditorChange();
 	}
 
@@ -264,6 +169,9 @@
 
 	// Set up editor event listeners
 	editor.addEventListener('input', debouncedOnEditorChange);
+	editor.addEventListener('keyup', saveSelection);
+	editor.addEventListener('mouseup', saveSelection);
+	editor.addEventListener('mouseleave', saveSelection);
 	editor.addEventListener('paste', (e) => {
 		e.preventDefault();
 		const text = e.clipboardData.getData('text/plain');
@@ -290,33 +198,54 @@
 	window.addEventListener('message', event => {
 		const message = event.data;
 
+		const payload = message.body ?? {};
+
 		switch (message.type) {
 			case 'init':
-				isEditable = message.editable;
+				isEditable = payload.editable ?? true;
 				editor.contentEditable = isEditable;
-				if (message.value) {
-					updateEditor(message.value);
-				}
+				updateEditor(payload.value ?? '');
 				if (!isEditable) {
 					toolbar.style.display = 'none';
 				}
+				isInitialized = true;
+				flushPendingGetFileData();
 				break;
 
 			case 'update':
-				if (message.content !== undefined) {
-					updateEditor(message.content);
+				if (payload.content !== undefined) {
+					updateEditor(payload.content);
 				}
 				break;
 
 			case 'getFileData':
-				vscode.postMessage({
-					type: 'response',
-					requestId: message.requestId,
-					body: currentContent
-				});
+				if (typeof message.requestId !== 'number') {
+					break;
+				}
+				if (!isInitialized) {
+					pendingGetFileData.push(message.requestId);
+					break;
+				}
+				respondWithCurrentContent(message.requestId);
 				break;
 		}
 	});
+
+	function respondWithCurrentContent(requestId) {
+		syncContentWithDom();
+		vscode.postMessage({
+			type: 'response',
+			requestId,
+			body: currentContent
+		});
+	}
+
+	function flushPendingGetFileData() {
+		while (pendingGetFileData.length) {
+			const requestId = pendingGetFileData.shift();
+			respondWithCurrentContent(requestId);
+		}
+	}
 
 	// Notify the extension that we're ready
 	vscode.postMessage({ type: 'ready' });
