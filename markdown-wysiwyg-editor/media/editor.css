@@ -1,0 +1,174 @@
+html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 8px 12px;
+	background-color: var(--vscode-editorWidget-background);
+	border-bottom: 1px solid var(--vscode-editorWidget-border);
+	flex-shrink: 0;
+}
+
+.toolbar-button {
+	min-width: 32px;
+	height: 28px;
+	padding: 4px 8px;
+	font-size: 12px;
+	cursor: pointer;
+	border-radius: 3px;
+}
+
+.toolbar-button:hover {
+	background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+.toolbar-button:active {
+	background-color: var(--vscode-toolbar-activeBackground);
+}
+
+.toolbar-separator {
+	width: 1px;
+	height: 20px;
+	background-color: var(--vscode-editorWidget-border);
+	margin: 0 4px;
+}
+
+.editor {
+	flex: 1;
+	padding: 20px;
+	overflow: auto;
+	font-family: var(--vscode-editor-font-family);
+	font-size: var(--vscode-editor-font-size);
+	line-height: 1.6;
+	outline: none;
+}
+
+.editor:focus {
+	outline: none;
+}
+
+/* Markdown styling */
+.editor h1 {
+	font-size: 2em;
+	font-weight: 600;
+	margin: 0.67em 0;
+	border-bottom: 1px solid var(--vscode-editorWidget-border);
+	padding-bottom: 0.3em;
+}
+
+.editor h2 {
+	font-size: 1.5em;
+	font-weight: 600;
+	margin: 0.75em 0;
+	border-bottom: 1px solid var(--vscode-editorWidget-border);
+	padding-bottom: 0.3em;
+}
+
+.editor h3 {
+	font-size: 1.25em;
+	font-weight: 600;
+	margin: 0.83em 0;
+}
+
+.editor h4 {
+	font-size: 1em;
+	font-weight: 600;
+	margin: 1em 0;
+}
+
+.editor h5 {
+	font-size: 0.875em;
+	font-weight: 600;
+	margin: 1.5em 0;
+}
+
+.editor h6 {
+	font-size: 0.85em;
+	font-weight: 600;
+	margin: 2em 0;
+	color: var(--vscode-descriptionForeground);
+}
+
+.editor p {
+	margin: 1em 0;
+}
+
+.editor ul,
+.editor ol {
+	margin: 1em 0;
+	padding-left: 2em;
+}
+
+.editor li {
+	margin: 0.25em 0;
+}
+
+.editor blockquote {
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 4px solid var(--vscode-editorWidget-border);
+	color: var(--vscode-descriptionForeground);
+}
+
+.editor code {
+	font-family: var(--vscode-editor-font-family);
+	font-size: 0.9em;
+	padding: 0.2em 0.4em;
+	background-color: var(--vscode-textCodeBlock-background);
+	border-radius: 3px;
+}
+
+.editor pre {
+	margin: 1em 0;
+	padding: 1em;
+	background-color: var(--vscode-textCodeBlock-background);
+	border-radius: 3px;
+	overflow-x: auto;
+}
+
+.editor pre code {
+	padding: 0;
+	background-color: transparent;
+}
+
+.editor a {
+	color: var(--vscode-textLink-foreground);
+	text-decoration: none;
+}
+
+.editor a:hover {
+	color: var(--vscode-textLink-activeForeground);
+	text-decoration: underline;
+}
+
+.editor strong {
+	font-weight: 600;
+}
+
+.editor em {
+	font-style: italic;
+}
+
+.editor hr {
+	border: none;
+	border-top: 1px solid var(--vscode-editorWidget-border);
+	margin: 2em 0;
+}
+
+/* Empty editor placeholder */
+.editor:empty:before {
+	content: "Start typing your markdown here...";
+	color: var(--vscode-descriptionForeground);
+	opacity: 0.5;
+}
