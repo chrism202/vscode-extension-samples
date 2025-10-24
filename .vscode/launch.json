@@ -1,0 +1,30 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Markdown WYSIWYG Editor",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/markdown-wysiwyg-editor"
+			],
+			"outFiles": [
+				"${workspaceFolder}/markdown-wysiwyg-editor/out/**/*.js"
+			]
+		},
+		{
+			"name": "Extension Tests: Markdown WYSIWYG Editor",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/markdown-wysiwyg-editor",
+				"--extensionTestsPath=${workspaceFolder}/markdown-wysiwyg-editor/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/markdown-wysiwyg-editor/out/test/**/*.js"
+			]
+		}
+	]
+}
