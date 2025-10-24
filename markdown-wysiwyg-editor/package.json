@@ -31,12 +31,28 @@
 				"priority": "option"
 			}
 		],
+		"configuration": {
+			"title": "Markdown WYSIWYG Editor",
+			"properties": {
+				"markdownWysiwyg.quip.accessToken": {
+					"type": "string",
+					"default": "",
+					"description": "Quip API access token for authentication. Get your token at https://quip.com/dev/token",
+					"markdownDescription": "Quip API access token for authentication. Get your token at [https://quip.com/dev/token](https://quip.com/dev/token)"
+				}
+			}
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
 					"id": "markdown-wysiwyg-assistant",
 					"title": "AI Writing Assistant",
 					"icon": "$(sparkle)"
+				},
+				{
+					"id": "quip-explorer",
+					"title": "Quip Explorer",
+					"icon": "$(cloud)"
 				}
 			]
 		},
@@ -46,6 +62,64 @@
 					"type": "webview",
 					"id": "markdownWysiwyg.aiAssistant",
 					"name": "AI Assistant"
+				}
+			],
+			"quip-explorer": [
+				{
+					"id": "quipDocuments",
+					"name": "Documents"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "quip.refresh",
+				"title": "Refresh",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "quip.openDocument",
+				"title": "Open Quip Document"
+			},
+			{
+				"command": "quip.pushChanges",
+				"title": "Push Changes to Quip",
+				"icon": "$(cloud-upload)"
+			},
+			{
+				"command": "quip.createDocument",
+				"title": "Create New Quip Document",
+				"icon": "$(new-file)"
+			},
+			{
+				"command": "quip.setAccessToken",
+				"title": "Set Quip Access Token"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "quip.refresh",
+					"when": "view == quipDocuments",
+					"group": "navigation"
+				},
+				{
+					"command": "quip.createDocument",
+					"when": "view == quipDocuments",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "quip.openDocument",
+					"when": "view == quipDocuments && viewItem == quipDocument"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "quip.pushChanges",
+					"when": "resourceScheme == file && resourceExtname == .md",
+					"group": "navigation"
 				}
 			]
 		}
