@@ -9,6 +9,7 @@ A simple What-You-See-Is-What-You-Get (WYSIWYG) editor for Markdown files in Vis
 - **Keyboard shortcuts**: Familiar shortcuts for bold (Ctrl+B) and italic (Ctrl+I)
 - **Auto-save**: Changes are automatically saved to your markdown files
 - **Full markdown support**: Headers, lists, links, code, blockquotes, and more
+- **AI Writing Assistant**: Side panel for managing writing instructions and context for AI coding assistants
 
 ## Usage
 
@@ -48,6 +49,57 @@ The editor provides a toolbar with the following formatting options:
 2. **Paste plain text** - The editor automatically converts pasted content to plain text
 3. **Use keyboard shortcuts** for faster formatting
 4. **Changes auto-save** - Your edits are automatically saved to the file
+
+## AI Writing Assistant
+
+This editor includes a specialized side panel designed for use with AI coding assistants like GitHub Copilot, Claude, and similar tools. Access it by clicking the AI assistant icon in the activity bar.
+
+### Universal Instructions
+
+Define your writing style preferences and guidelines that AI assistants should follow when helping with your markdown documents.
+
+**To create a universal instruction:**
+1. Click the **"+"** button in the Universal Instructions section
+2. Enter a descriptive name (e.g., "technical-style", "blog-tone")
+3. Fill in your preferences in the created markdown file
+
+**Example universal instructions:**
+- Tone preferences (formal, casual, technical, conversational)
+- Writing style (concise, detailed, journalistic)
+- Language patterns (avoid passive voice, use Oxford comma)
+- Formatting preferences
+
+### Relevant Context
+
+Store reference materials, data, examples, and other information that can inform your writing and help AI assistants provide better suggestions.
+
+**To create relevant context:**
+1. Click the **"+"** button in the Relevant Context section
+2. Enter a descriptive name (e.g., "research-notes", "reference-data")
+3. Add your reference material in the created markdown file
+
+**Example relevant context:**
+- Research notes and findings
+- Data and statistics to reference
+- Writing examples to emulate
+- Background information on topics
+- Glossaries and terminology
+
+### Managing Files
+
+- **Open a file**: Click on any file name in either section
+- **Delete a file**: Click the × button next to the file name
+- **Files location**: All files are stored in `.ai-assistant/` folder in your workspace root
+  - Universal instructions: `.ai-assistant/universal-instructions/`
+  - Relevant context: `.ai-assistant/relevant-context/`
+
+### Using with AI Assistants
+
+When working with AI coding assistants:
+1. Create your universal instructions to define your writing style
+2. Add relevant context for the current project or topic
+3. Reference these files when prompting AI assistants
+4. AI assistants can read these files to better understand your preferences and context
 
 ## Supported Markdown Features
 
@@ -96,11 +148,15 @@ markdown-wysiwyg-editor/
 ├── src/
 │   ├── extension.ts          # Extension entry point
 │   ├── markdownEditor.ts     # Custom editor provider
+│   ├── aiAssistantPanel.ts   # AI assistant side panel provider
 │   ├── dispose.ts            # Disposable utilities
 │   └── util.ts               # Utility functions
 ├── media/
-│   ├── editor.js             # Webview JavaScript
+│   ├── editor.js             # Editor webview JavaScript
 │   ├── editor.css            # Editor styles
+│   ├── panel.js              # Side panel webview JavaScript
+│   ├── panel.css             # Side panel styles
+│   ├── ai-icon.svg           # AI assistant activity bar icon
 │   ├── vscode.css            # VS Code theme integration
 │   └── reset.css             # CSS reset
 ├── package.json              # Extension manifest

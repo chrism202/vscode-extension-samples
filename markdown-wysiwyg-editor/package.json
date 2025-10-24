@@ -30,7 +30,25 @@
 				],
 				"priority": "option"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "markdown-ai-assistant",
+					"title": "Markdown AI Assistant",
+					"icon": "media/ai-icon.svg"
+				}
+			]
+		},
+		"views": {
+			"markdown-ai-assistant": [
+				{
+					"type": "webview",
+					"id": "markdownAiAssistant.sidePanel",
+					"name": "AI Writing Assistant"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

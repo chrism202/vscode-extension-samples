@@ -1,0 +1,7 @@
+out
+node_modules
+.vscode-test/
+*.vsix
+
+# AI Assistant user-specific files
+.ai-assistant/
