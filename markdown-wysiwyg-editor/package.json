@@ -30,7 +30,25 @@
 				],
 				"priority": "option"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "markdown-wysiwyg-assistant",
+					"title": "AI Writing Assistant",
+					"icon": "$(sparkle)"
+				}
+			]
+		},
+		"views": {
+			"markdown-wysiwyg-assistant": [
+				{
+					"type": "webview",
+					"id": "markdownWysiwyg.aiAssistant",
+					"name": "AI Assistant"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -48,6 +66,7 @@
 		"typescript-eslint": "^8.39.0"
 	},
 	"dependencies": {
+		"@vscode/codicons": "^0.0.41",
 		"marked": "^9.1.0",
 		"turndown": "^7.2.1"
 	}
